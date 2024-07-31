@@ -37,7 +37,6 @@ const AboutContent = () => {
               short breaks.
             </p>
             <ul className="list-disc list-inside mt-4 text-sm text-gray-500">
-              <li>Work for 25 minutes (one "Pomodoro")</li>
               <li>Take a 5-minute break</li>
               <li>After 4 Pomodoros, take a longer break (15-30 minutes)</li>
             </ul>
