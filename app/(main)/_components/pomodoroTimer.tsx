@@ -17,6 +17,13 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import Header from "./header";
 
+//type declaration
+declare global {
+  interface Window {
+    setInterval: (handler: TimerHandler, timeout?: number) => number;
+  }
+}
+
 // Pomodoro Timer Component
 const PomodoroTimer = () => {
   const [time, setTime] = useState(25 * 60);
@@ -32,12 +39,11 @@ const PomodoroTimer = () => {
     longBreakTime: 15,
   });
   const [saveState, setSaveState] = useState("idle"); // 'idle', 'success', or 'error'
-
   useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
+    let intervalId: number | undefined;
 
     if (isActive && time > 0) {
-      intervalId = setInterval(() => {
+      intervalId = window.setInterval(() => {
         setTime((prevTime) => prevTime - 1);
       }, 1000);
     } else if (time === 0) {
@@ -45,12 +51,11 @@ const PomodoroTimer = () => {
     }
 
     return () => {
-      if (intervalId !== null) {
-        clearInterval(intervalId);
+      if (intervalId !== undefined) {
+        window.clearInterval(intervalId);
       }
     };
   }, [isActive, time]);
-
   const toggleTimer = () => {
     setIsActive(!isActive);
   };
