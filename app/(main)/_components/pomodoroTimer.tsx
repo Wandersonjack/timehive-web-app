@@ -24,6 +24,14 @@ declare global {
   }
 }
 
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}`;
+};
+
 // Pomodoro Timer Component
 const PomodoroTimer = () => {
   const [time, setTime] = useState(25 * 60);
@@ -39,6 +47,7 @@ const PomodoroTimer = () => {
     longBreakTime: 15,
   });
   const [saveState, setSaveState] = useState("idle"); // 'idle', 'success', or 'error'
+
   useEffect(() => {
     let intervalId: number | undefined;
 
@@ -56,6 +65,7 @@ const PomodoroTimer = () => {
       }
     };
   }, [isActive, time]);
+
   const toggleTimer = () => {
     setIsActive(!isActive);
   };
@@ -63,14 +73,6 @@ const PomodoroTimer = () => {
   const resetTimer = () => {
     setIsActive(false);
     setTime(getCurrentModeTime() * 60);
-  };
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
   };
 
   const getCurrentModeTime = () => {
@@ -86,7 +88,7 @@ const PomodoroTimer = () => {
     }
   };
 
-  const handleModeChange = (newMode) => {
+  const handleModeChange = (newMode: string) => {
     setMode(newMode);
     setIsActive(false);
     setTime(
@@ -98,7 +100,10 @@ const PomodoroTimer = () => {
     );
   };
 
-  const handleTempSettingChange = (e, key) => {
+  const handleTempSettingChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
     setTempSettings({ ...tempSettings, [key]: Number(e.target.value) });
   };
 
@@ -116,7 +121,7 @@ const PomodoroTimer = () => {
     setWorkTime(tempSettings.workTime);
     setShortBreakTime(tempSettings.shortBreakTime);
     setLongBreakTime(tempSettings.longBreakTime);
-    setTime(tempSettings[`${mode}Time`] * 60);
+    setTime(tempSettings[`${mode}Time` as keyof typeof tempSettings] * 60);
     setSaveState("success");
     setTimeout(() => {
       setSaveState("idle");
@@ -124,7 +129,7 @@ const PomodoroTimer = () => {
     }, 1500);
   };
 
-  const handleOpenSettingsChange = (open) => {
+  const handleOpenSettingsChange = (open: boolean) => {
     if (open) {
       setTempSettings({ workTime, shortBreakTime, longBreakTime });
     }
