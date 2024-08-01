@@ -34,16 +34,21 @@ const PomodoroTimer = () => {
   const [saveState, setSaveState] = useState("idle"); // 'idle', 'success', or 'error'
 
   useEffect(() => {
-    let interval = null;
+    let intervalId: NodeJS.Timeout | null = null;
+
     if (isActive && time > 0) {
-      interval = setInterval(() => {
-        setTime((time) => time - 1);
+      intervalId = setInterval(() => {
+        setTime((prevTime) => prevTime - 1);
       }, 1000);
     } else if (time === 0) {
-      clearInterval(interval);
       setIsActive(false);
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+      }
+    };
   }, [isActive, time]);
 
   const toggleTimer = () => {
