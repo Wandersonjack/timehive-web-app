@@ -28,8 +28,6 @@ const AboutPage: React.FC = () => {
               <li>Customizable work and break intervals</li>
               <li>Visual and audio notifications</li>
               <li>Clean and intuitive user interface</li>
-              <li>Progress tracking</li>
-              <li>Dark mode support</li>
             </ul>
             <h3 className="text-xl font-semibold mb-2">About the Creator 👨‍💻</h3>
             <p className="text-gray-600 mb-4">
