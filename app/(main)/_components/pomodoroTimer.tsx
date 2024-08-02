@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import Header from "./header";
+import Footer from "./footer";
 
 const PomodoroTimer = () => {
   const [time, setTime] = useState(25 * 60);
@@ -316,6 +317,7 @@ const PomodoroTimer = () => {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 };
