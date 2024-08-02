@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Settings, Check, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Settings, Check, X, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,22 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import Header from "./header";
 
-//type declaration
-declare global {
-  interface Window {
-    setInterval: (handler: TimerHandler, timeout?: number) => number;
-  }
-}
-
-const formatTime = (seconds: number) => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, "0")}:${secs
-    .toString()
-    .padStart(2, "0")}`;
-};
-
-// Pomodoro Timer Component
 const PomodoroTimer = () => {
   const [time, setTime] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
@@ -46,7 +30,17 @@ const PomodoroTimer = () => {
     shortBreakTime: 5,
     longBreakTime: 15,
   });
-  const [saveState, setSaveState] = useState("idle"); // 'idle', 'success', or 'error'
+  const [saveState, setSaveState] = useState("idle");
+  const [isMuted, setIsMuted] = useState(false);
+  const startWorkAudioRef = useRef<HTMLAudioElement | null>(null);
+  const startBreakAudioRef = useRef<HTMLAudioElement | null>(null);
+  const endSessionAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    startWorkAudioRef.current = new Audio("../sounds/start_work.mp3");
+    startBreakAudioRef.current = new Audio("../sounds/start_break.mp3");
+    endSessionAudioRef.current = new Audio("../sounds/end_session.mp3");
+  }, []);
 
   useEffect(() => {
     let intervalId: number | undefined;
@@ -57,6 +51,16 @@ const PomodoroTimer = () => {
       }, 1000);
     } else if (time === 0) {
       setIsActive(false);
+      playSound(endSessionAudioRef.current);
+      if (mode === "work") {
+        setMode("shortBreak");
+        setTime(shortBreakTime * 60);
+        playSound(startBreakAudioRef.current);
+      } else {
+        setMode("work");
+        setTime(workTime * 60);
+        playSound(startWorkAudioRef.current);
+      }
     }
 
     return () => {
@@ -64,15 +68,40 @@ const PomodoroTimer = () => {
         window.clearInterval(intervalId);
       }
     };
-  }, [isActive, time]);
+  }, [isActive, time, mode, workTime, shortBreakTime]);
+
+  const playSound = (audio: HTMLAudioElement | null) => {
+    if (audio && !isMuted) {
+      audio
+        .play()
+        .catch((error) => console.error("Error playing audio:", error));
+    }
+  };
 
   const toggleTimer = () => {
     setIsActive(!isActive);
+    if (!isActive) {
+      playSound(
+        mode === "work" ? startWorkAudioRef.current : startBreakAudioRef.current
+      );
+    }
   };
 
   const resetTimer = () => {
     setIsActive(false);
     setTime(getCurrentModeTime() * 60);
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const getCurrentModeTime = () => {
@@ -182,72 +211,77 @@ const PomodoroTimer = () => {
         <Card className="w-[350px]">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-2xl font-bold">Pomodoro Timer</CardTitle>
-            <Dialog
-              open={isSettingsOpen}
-              onOpenChange={handleOpenSettingsChange}
-            >
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Settings</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="workTime" className="text-right">
-                      Work Time (min):
-                    </Label>
-                    <Input
-                      id="workTime"
-                      type="number"
-                      value={tempSettings.workTime}
-                      onChange={(e) => handleTempSettingChange(e, "workTime")}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="shortBreakTime" className="text-right">
-                      Short Break (min):
-                    </Label>
-                    <Input
-                      id="shortBreakTime"
-                      type="number"
-                      value={tempSettings.shortBreakTime}
-                      onChange={(e) =>
-                        handleTempSettingChange(e, "shortBreakTime")
-                      }
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="longBreakTime" className="text-right">
-                      Long Break (min):
-                    </Label>
-                    <Input
-                      id="longBreakTime"
-                      type="number"
-                      value={tempSettings.longBreakTime}
-                      onChange={(e) =>
-                        handleTempSettingChange(e, "longBreakTime")
-                      }
-                      className="col-span-3"
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsSettingsOpen(false)}
-                  >
-                    Cancel
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="icon" onClick={toggleMute}>
+                {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </Button>
+              <Dialog
+                open={isSettingsOpen}
+                onOpenChange={handleOpenSettingsChange}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Settings className="h-4 w-4" />
                   </Button>
-                  <SaveButton />
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Settings</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="workTime" className="text-right">
+                        Work Time (min):
+                      </Label>
+                      <Input
+                        id="workTime"
+                        type="number"
+                        value={tempSettings.workTime}
+                        onChange={(e) => handleTempSettingChange(e, "workTime")}
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="shortBreakTime" className="text-right">
+                        Short Break (min):
+                      </Label>
+                      <Input
+                        id="shortBreakTime"
+                        type="number"
+                        value={tempSettings.shortBreakTime}
+                        onChange={(e) =>
+                          handleTempSettingChange(e, "shortBreakTime")
+                        }
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="longBreakTime" className="text-right">
+                        Long Break (min):
+                      </Label>
+                      <Input
+                        id="longBreakTime"
+                        type="number"
+                        value={tempSettings.longBreakTime}
+                        onChange={(e) =>
+                          handleTempSettingChange(e, "longBreakTime")
+                        }
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsSettingsOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <SaveButton />
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs
