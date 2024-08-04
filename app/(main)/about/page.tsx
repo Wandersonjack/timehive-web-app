@@ -6,7 +6,7 @@ import Header from "../_components/header";
 import Footer from "../_components/footer";
 import { useSearchParams } from "next/navigation";
 
-const AboutPage: React.FC = () => {
+const AboutPageContent: React.FC = () => {
   const searchParams = useSearchParams();
 
   return (
@@ -82,4 +82,12 @@ const AboutPage: React.FC = () => {
   );
 };
 
-export default AboutPage;
+const WrappedAboutPage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AboutPageContent />
+    </Suspense>
+  );
+};
+
+export default WrappedAboutPage;

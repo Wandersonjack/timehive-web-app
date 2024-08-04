@@ -1,8 +1,9 @@
 "use client";
+import React, { Suspense } from "react";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
 
-const TermsAndConditions: React.FC = () => {
+const TermsAndConditionsContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -69,4 +70,13 @@ const TermsAndConditions: React.FC = () => {
     </div>
   );
 };
-export default TermsAndConditions;
+
+const WrappedTermsAndConditions: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TermsAndConditionsContent />
+    </Suspense>
+  );
+};
+
+export default WrappedTermsAndConditions;
