@@ -1,8 +1,8 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
 
-const PrivacyPolicy: React.FC = () => {
+const PrivacyPolicyContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -79,4 +79,10 @@ const PrivacyPolicy: React.FC = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default function WrappedPrivacyPolicy() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PrivacyPolicyContent />
+    </Suspense>
+  );
+}

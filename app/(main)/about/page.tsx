@@ -1,10 +1,14 @@
-import React from "react";
+"use client";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
+import { useSearchParams } from "next/navigation";
 
-const AboutPage: React.FC = () => {
+const AboutPageContent: React.FC = () => {
+  const searchParams = useSearchParams();
+
   return (
     <div>
       <Header />
@@ -78,4 +82,10 @@ const AboutPage: React.FC = () => {
   );
 };
 
-export default AboutPage;
+export default function WrappedAboutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AboutPageContent />
+    </Suspense>
+  );
+}

@@ -1,9 +1,8 @@
-// pages/index.tsx
-
+import React, { Suspense } from "react";
 import PomodoroTimer from "./(main)/_components/pomodoroTimer";
 import { structuredData } from "./structuredData";
 
-const Home: React.FC = () => {
+const HomeContent: React.FC = () => {
   return (
     <div>
       <script
@@ -15,4 +14,10 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default function WrappedHome() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
+  );
+}
