@@ -1,12 +1,8 @@
 "use client";
-import React, { Suspense } from "react";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
-import { useSearchParams } from "next/navigation";
 
-const TermsAndConditionsContent: React.FC = () => {
-  const searchParams = useSearchParams();
-
+const TermsAndConditions: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -73,13 +69,4 @@ const TermsAndConditionsContent: React.FC = () => {
     </div>
   );
 };
-
-const WrappedTermsAndConditions: React.FC = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <TermsAndConditionsContent />
-    </Suspense>
-  );
-};
-
-export default WrappedTermsAndConditions;
+export default TermsAndConditions;

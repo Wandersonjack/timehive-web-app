@@ -4,7 +4,7 @@ import Header from "../_components/header";
 import Footer from "../_components/footer";
 import { useSearchParams } from "next/navigation";
 
-const PrivacyPolicyContent: React.FC = () => {
+const PrivacyPolicy: React.FC = () => {
   const searchParams = useSearchParams();
 
   return (
@@ -82,12 +82,5 @@ const PrivacyPolicyContent: React.FC = () => {
     </div>
   );
 };
-const WrappedPrivacyPolicy: React.FC = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <PrivacyPolicyContent />
-    </Suspense>
-  );
-};
 
-export default WrappedPrivacyPolicy;
+export default PrivacyPolicy;
