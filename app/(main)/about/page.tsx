@@ -82,10 +82,12 @@ const AboutPageContent: React.FC = () => {
   );
 };
 
-export default function WrappedAboutPage() {
+const WrappedAboutPage: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AboutPageContent />
     </Suspense>
   );
-}
+};
+
+export default WrappedAboutPage;

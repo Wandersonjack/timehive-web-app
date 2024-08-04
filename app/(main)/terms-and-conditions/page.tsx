@@ -70,10 +70,12 @@ const TermsAndConditionsContent: React.FC = () => {
   );
 };
 
-export default function WrappedTermsAndConditions() {
+const WrappedTermsAndConditions: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <TermsAndConditionsContent />
     </Suspense>
   );
-}
+};
+
+export default WrappedTermsAndConditions;

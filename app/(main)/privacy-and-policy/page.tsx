@@ -78,11 +78,12 @@ const PrivacyPolicyContent: React.FC = () => {
     </div>
   );
 };
-
-export default function WrappedPrivacyPolicy() {
+const WrappedPrivacyPolicy: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <PrivacyPolicyContent />
     </Suspense>
   );
-}
+};
+
+export default WrappedPrivacyPolicy;
