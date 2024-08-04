@@ -1,8 +1,12 @@
+"use client";
 import React, { Suspense } from "react";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
+import { useSearchParams } from "next/navigation";
 
 const PrivacyPolicyContent: React.FC = () => {
+  const searchParams = useSearchParams();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
